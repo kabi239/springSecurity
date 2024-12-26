@@ -28,6 +28,7 @@ public class securityConfig {
         //Configures session management policy to be stateless,
         // meaning the server will not store session information.
 
+
         //http.formLogin(Customizer.withDefaults()); -> this is for form based login
         http.httpBasic(Customizer.withDefaults());
         // implementing http basic auth
