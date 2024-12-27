@@ -7,6 +7,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -35,5 +39,19 @@ public class securityConfig {
 
         return (SecurityFilterChain)http.build();
         //returning the object of type security filter chain
+    }
+
+    //In memory config
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails admin = User.withUsername("admin")
+                .password("{noop}adminPassword")
+                .roles("ADMIN")
+                .build();
+        UserDetails user1 = User.withUsername("user1")
+                .password("{noop}userPassword")
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user1,admin);
     }
 }
