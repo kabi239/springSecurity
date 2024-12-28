@@ -49,7 +49,14 @@ public class securityConfig {
         // implementing http basic auth
         http.headers(headers ->
                 headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+        //This line configures the X-Frame-Options HTTP response header using Spring Security.
+        //What is X-Frame-Options?
+        // It is a security header that controls whether a webpage can be embedded in a frame or iframe.
         http.csrf(AbstractHttpConfigurer::disable);
+        // This line disables Cross-Site Request Forgery (CSRF) protection in Spring Security.
+        //What is CSRF?
+        // A type of attack where a malicious website tricks a user's browser into performing
+        // unintended actions on a trusted site where the user is authenticated.
         return http.build();
         //returning the object of type security filter chain
     }
