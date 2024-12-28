@@ -3,6 +3,7 @@ package com.example.securitydemo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
@@ -19,6 +20,12 @@ import org.springframework.security.web.SecurityFilterChain;
 //-This annotation tells spring boot to enable web security features in the application.
 //-Also gives us the liberty, where using this particular class we are able
 // to customize the security configs.
+@EnableMethodSecurity
+//It enables method-level security annotations in a Spring application, such as:
+// - @PreAuthorize
+// - @PostAuthorize
+// - @Secured
+// - @RolesAllowed
 public class securityConfig {
     @Bean
     //this make sure that the below method is available as bean provider
@@ -45,9 +52,15 @@ public class securityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails admin = User.withUsername("admin")
+        //Creating User object for admin  // Setting username as "admin"
                 .password("{noop}adminPassword")
+                // specifying password as "adminPassword" , {noop} prefix indicates
+                // that no password encoding is used(plain text password) --- not recommended for production
                 .roles("ADMIN")
+                //Assigns the role "ADMIN" to the user
                 .build();
+                //Finalizes the construction of the user object and returns
+                // a UserDetails instance.
         UserDetails user1 = User.withUsername("user1")
                 .password("{noop}userPassword")
                 .roles("USER")
