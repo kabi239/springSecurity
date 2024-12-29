@@ -1,5 +1,6 @@
 package com.example.securitydemo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -14,7 +15,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import javax.sql.DataSource;
 
 @Configuration
 //Tells spring that this provides configuration to tha application context
@@ -29,6 +33,13 @@ import org.springframework.security.web.SecurityFilterChain;
 // - @Secured
 // - @RolesAllowed
 public class securityConfig {
+   @Autowired
+    DataSource dataSource;
+    //The DataSource interface is part of the javax.sql package and is
+    // implemented by various database connection pooling libraries
+    // (e.g., HikariCP, Apache DBCP, or Tomcat JDBC Connection Pool).
+
+
     @Bean
     //this make sure that the below method is available as bean provider
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -61,7 +72,7 @@ public class securityConfig {
         //returning the object of type security filter chain
     }
 
-    //In memory config
+    //In memory -H2 DATABASE
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails admin = User.withUsername("admin")
@@ -74,10 +85,18 @@ public class securityConfig {
                 .build();
                 //Finalizes the construction of the user object and returns
                 // a UserDetails instance.
-        UserDetails user1 = User.withUsername("user1")
+        UserDetails user = User.withUsername("user")
                 .password("{noop}userPassword")
                 .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user1,admin);
+        JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
+        //JdbcUserDetailsManager: This is a Spring Security implementation of the
+        // UserDetailsManager interface. It uses a relational database as the data
+        // store for user authentication and authorization details.
+        userDetailsManager.createUser(user);
+        //createUser Method: This method is used to add a new user to the database.
+        // The User object must implement Spring Security's UserDetails interface
+        userDetailsManager.createUser(admin);
+        return new InMemoryUserDetailsManager(user,admin);
     }
 }
