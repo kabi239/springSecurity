@@ -14,6 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -77,8 +79,8 @@ public class securityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails admin = User.withUsername("admin")
         //Creating User object for admin  // Setting username as "admin"
-                .password("{noop}adminPassword")
-                // specifying password as "adminPassword" , {noop} prefix indicates
+                .password(passwordEncoder().encode("adminPassword"))
+                // specifying password as "adminPassword" , .password("{noop}adminPassword") {noop} prefix indicates
                 // that no password encoding is used(plain text password) --- not recommended for production
                 .roles("ADMIN")
                 //Assigns the role "ADMIN" to the user
@@ -86,7 +88,7 @@ public class securityConfig {
                 //Finalizes the construction of the user object and returns
                 // a UserDetails instance.
         UserDetails user = User.withUsername("user")
-                .password("{noop}userPassword")
+                .password(passwordEncoder().encode("userPassword"))
                 .roles("USER")
                 .build();
         JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
@@ -98,5 +100,11 @@ public class securityConfig {
         // The User object must implement Spring Security's UserDetails interface
         userDetailsManager.createUser(admin);
         return new InMemoryUserDetailsManager(user,admin);
+    }
+    @Bean
+    //The purpose of this method is to provide a secure way to hash passwords before
+    // storing them in the database.
+    public PasswordEncoder passwordEncoder() {
+        return  new BCryptPasswordEncoder();
     }
 }
