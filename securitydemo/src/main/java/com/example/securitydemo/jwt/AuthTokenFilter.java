@@ -18,7 +18,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 
 @Component //Indicates that this class is a Spring-managed component, allowing it to be automatically detected and instantiated during component scanning.
-public abstract class AuthTokenFilter extends OncePerRequestFilter { //This class extends the OncePerRequestFilter, ensuring that the filter logic is applied
+public class AuthTokenFilter extends OncePerRequestFilter { //This class extends the OncePerRequestFilter, ensuring that the filter logic is applied
     // only once per HTTP request. and  Declares the class as an abstract class, meaning it cannot be instantiated directly
     @Autowired //Injects the JwtUtils dependency automatically
     private JwtUtils jwtUtils;
