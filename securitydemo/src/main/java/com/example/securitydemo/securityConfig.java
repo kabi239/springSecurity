@@ -7,13 +7,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
@@ -21,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -43,18 +40,21 @@ import javax.sql.DataSource;
 
 public class securityConfig {
    @Autowired
-    DataSource dataSource;
+    DataSource dataSource; //Injects a DataSource bean for database operations.
     //The DataSource interface is part of the javax.sql package and is
     // implemented by various database connection pooling libraries
     // (e.g., HikariCP, Apache DBCP, or Tomcat JDBC Connection Pool).
 
     @Autowired
     public AuthEntryPointJwt unauthorizedHandler;
+    //Injects a custom handler to manage unauthorized access errors.
 
     @Bean
+    //Returns an instance of AuthTokenFilter, which will process JWT tokens in incoming requests.
     public AuthTokenFilter authenticationJwtTokenFilter(){
         return new AuthTokenFilter();
     }
+
     @Bean
     //this make sure that the below method is available as bean provider
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -118,6 +118,7 @@ public class securityConfig {
 //    }
 
     @Bean
+    //Uses a database (via JdbcUserDetailsManager) for storing and retrieving user details.
     public UserDetailsService userDetailsService(DataSource dataSource) {
         return new JdbcUserDetailsManager(dataSource);
     }
@@ -149,6 +150,7 @@ public class securityConfig {
     }
 
     @Bean
+    //Provides an AuthenticationManager bean for managing authentication logic.
     public AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
         return builder.getAuthenticationManager();
     }
